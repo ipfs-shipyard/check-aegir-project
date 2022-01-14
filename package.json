@@ -1,0 +1,26 @@
+{
+  "name": "check-pl-js-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "standard"
+  },
+  "author": "",
+  "license": "ISC",
+  "bin": {
+    "check-project": "./src/index.js"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "diff": "^5.0.0",
+    "execa": "^5.0.0",
+    "it-glob": "^1.0.2",
+    "merge-options": "^3.0.4",
+    "prompt": "^1.2.1"
+  },
+  "devDependencies": {
+    "standard": "^16.0.4"
+  }
+}
