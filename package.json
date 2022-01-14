@@ -1,6 +1,6 @@
 {
   "name": "check-pl-js-project",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Ensure conformity between different js projects",
   "main": "index.js",
   "scripts": {
