@@ -163,9 +163,35 @@ function sortManifest (manifest) {
   return sorted
 }
 
+function constructManifest (manifest, manifestFields, repoUrl, homePage = repoUrl) {
+  return {
+    name: manifest.name,
+    version: manifest.version,
+    description: manifest.description,
+    homepage: `${homePage}#readme`,
+    license: 'Apache-2.0 OR MIT',
+    repository: {
+      type: 'git',
+      url: `git+${repoUrl}.git`
+    },
+    bugs: {
+      url: `${repoUrl}/issues`
+    },
+    ...manifestFields,
+    scripts: manifest.scripts,
+    dependencies: manifest.dependencies,
+    devDependencies: manifest.devDependencies,
+    peerDependencies: manifest.peerDependencies,
+    peerDependenciesMeta: manifest.peerDependenciesMeta,
+    optionalDependencies: manifest.optionalDependencies,
+    bundledDependencies: manifest.bundledDependencies
+  }
+}
+
 module.exports = {
   ensureFileHasContents,
   ensureFileNotPresent,
   sortManifest,
-  sortFields
+  sortFields,
+  constructManifest
 }

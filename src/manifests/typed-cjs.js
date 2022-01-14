@@ -2,74 +2,38 @@
 
 const { semanticReleaseConfig } = require('../semantic-release-config')
 const merge = require('merge-options').bind({ ignoreUndefined: true })
-const { sortFields } = require('../utils')
-
-const manifestFields = {
-  main: 'src/index.js',
-  types: 'dist/src/index.d.ts',
-  typesVersions: {
-    '*': {
-      '*': [
-        '*',
-        'dist/*',
-        'dist/src/*'
-      ],
-      'src/*': [
-        '*',
-        'dist/*',
-        'dist/src/*'
-      ]
-    }
-  },
-  files: [
-    'src',
-    'dist'
-  ],
-  eslintConfig: {
-    extends: 'ipfs'
-  },
-  release: {},
-  scripts: {
-    lint: 'aegir lint',
-    'dep-check': 'aegir dep-check',
-    build: 'aegir build',
-    test: 'aegir test',
-    'test:chrome': 'npm run test -- -t browser --cov',
-    'test:chrome-webworker': 'npm run test -- -t webworker',
-    'test:firefox': 'npm run test -- -t browser -- --browser firefox',
-    'test:firefox-webworker': 'npm run test -- -t webworker -- --browser firefox',
-    'test:node': 'npm run test -- -t node --cov',
-    'test:electron-main': 'npm run test -- -t electron-main',
-    release: 'semantic-release'
-  }
-}
+const {
+  sortFields,
+  constructManifest
+} = require('../utils')
 
 async function untypedCJSManifest (projectDir, manifest, branchName, repoUrl, homePage = repoUrl) {
-  let proposedManifest = {
-    name: manifest.name,
-    version: manifest.version,
-    description: manifest.description,
-    homepage: `${homePage}#readme`,
-    license: 'Apache-2.0 OR MIT',
-    repository: {
-      type: 'git',
-      url: `git+${repoUrl}.git`
+  let proposedManifest = constructManifest(manifest, {
+    main: 'src/index.js',
+    types: 'dist/src/index.d.ts',
+    typesVersions: {
+      '*': {
+        '*': [
+          '*',
+          'dist/*',
+          'dist/src/*'
+        ],
+        'src/*': [
+          '*',
+          'dist/*',
+          'dist/src/*'
+        ]
+      }
     },
-    bugs: {
-      url: `${repoUrl}/issues`
-    },
-    ...manifestFields,
-    dependencies: manifest.dependencies,
-    devDependencies: manifest.devDependencies,
-    peerDependencies: manifest.peerDependencies,
-    peerDependenciesMeta: manifest.peerDependenciesMeta,
-    optionalDependencies: manifest.optionalDependencies,
-    bundledDependencies: manifest.bundledDependencies
-  }
-
-  proposedManifest.release = semanticReleaseConfig(branchName, 'dist')
-  proposedManifest.eslintConfig = merge(proposedManifest.eslintConfig, manifest.eslintConfig)
-  proposedManifest.scripts = merge(proposedManifest.scripts, manifest.scripts)
+    files: [
+      'src',
+      'dist'
+    ],
+    eslintConfig: merge({
+      extends: 'ipfs'
+    }, manifest.eslintConfig),
+    release: semanticReleaseConfig(branchName)
+  }, repoUrl, homePage)
 
   const rest = {
     ...sortFields(manifest)
