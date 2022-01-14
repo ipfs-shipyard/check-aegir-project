@@ -1,5 +1,4 @@
 'use strict'
-/* eslint-disable no-console */
 
 const {
   ensureFileHasContents,
@@ -32,7 +31,6 @@ async function isManagedRepo (repoName) {
   const repos = JSON.parse(await download(managedRepos)).repositories
 
   for (const { target } of repos) {
-    console.info(target, repoName)
     if (target === repoName) {
       return true
     }

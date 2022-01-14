@@ -63,8 +63,8 @@ async function typescriptManifest (projectDir, manifest, branchName, repoUrl, ho
 
   proposedManifest.release = semanticReleaseConfig(branchName)
   proposedManifest.exports = merge(manifest.exports, proposedManifest.exports)
-  proposedManifest.eslintConfig = merge(manifest.eslintConfig, proposedManifest.eslintConfig)
-  proposedManifest.scripts = merge(manifest.scripts, proposedManifest.scripts)
+  proposedManifest.eslintConfig = merge(proposedManifest.eslintConfig, manifest.eslintConfig)
+  proposedManifest.scripts = merge(proposedManifest.scripts, manifest.scripts)
 
   if (Object.keys(proposedManifest.exports).length > 1) {
     console.info('Multiple exports detected')

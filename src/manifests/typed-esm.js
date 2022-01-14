@@ -69,8 +69,8 @@ async function typedESMManifest (projectDir, manifest, branchName, repoUrl, home
 
   proposedManifest.release = semanticReleaseConfig(branchName, 'dist')
   proposedManifest.exports = merge(manifest.exports, proposedManifest.exports)
-  proposedManifest.eslintConfig = merge(manifest.eslintConfig, proposedManifest.eslintConfig)
-  proposedManifest.scripts = merge(manifest.scripts, proposedManifest.scripts)
+  proposedManifest.eslintConfig = merge(proposedManifest.eslintConfig, manifest.eslintConfig)
+  proposedManifest.scripts = merge(proposedManifest.scripts, manifest.scripts)
 
   const rest = {
     ...manifest

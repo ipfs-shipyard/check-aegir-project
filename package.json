@@ -106,10 +106,10 @@
     ]
   },
   "scripts": {
-    "test": "aegir test",
     "lint": "aegir lint",
     "dep-check": "aegir dep-check",
     "build": "aegir build",
+    "test": "aegir test",
     "test:chrome": "npm run test -- -t browser --cov",
     "test:chrome-webworker": "npm run test -- -t webworker",
     "test:firefox": "npm run test -- -t browser -- --browser firefox",

@@ -61,8 +61,8 @@ async function untypedCJSManifest (projectDir, manifest, branchName, repoUrl, ho
   }
 
   proposedManifest.release = semanticReleaseConfig(branchName, 'dist')
-  proposedManifest.eslintConfig = merge(manifest.eslintConfig, proposedManifest.eslintConfig)
-  proposedManifest.scripts = merge(manifest.scripts, proposedManifest.scripts)
+  proposedManifest.eslintConfig = merge(proposedManifest.eslintConfig, manifest.eslintConfig)
+  proposedManifest.scripts = merge(proposedManifest.scripts, manifest.scripts)
 
   const rest = {
     ...manifest
