@@ -1,6 +1,6 @@
 {
   "name": "check-aegir-project",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Ensure conformity between different aegir-managed projects",
   "homepage": "https://github.com/ipfs-shipyard/check-pl-js-project#readme",
   "license": "Apache-2.0 OR MIT",
