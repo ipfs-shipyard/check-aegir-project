@@ -27,7 +27,7 @@ async function ensureFileHasContents (projectDir, filePath, expectedContents) {
     })
 
     if (filePath.endsWith('.json')) {
-      existingContents = JSON.stringify(JSON.parse(existingContents), null, 2)
+      existingContents = JSON.stringify(JSON.parse(existingContents), null, 2) + '\n'
     }
   } else {
     if (process.env.CI) {
