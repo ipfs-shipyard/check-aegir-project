@@ -15,7 +15,7 @@ const manifestFields = {
       ],
       'types/*': [
         'types/*',
-        'types/*'
+        'types/src/*'
       ]
     }
   },

@@ -116,8 +116,12 @@ async function processProject (projectDir, manifest, branchName, repoUrl) {
   await checkBuildFiles(projectDir, branchName, repoUrl)
 }
 
+function isAegirProject (manifest) {
+  return Boolean(manifest.devDependencies.aegir) || Boolean(manifest.dependencies.aegir)
+}
+
 async function processModule (projectDir, manifest, branchName, repoUrl, homePage = repoUrl) {
-  if (!manifest.devDependencies.aegir) {
+  if (!isAegirProject(manifest)) {
     throw new Error('Not an aegir project')
   }
 

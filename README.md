@@ -23,6 +23,8 @@ Follow the prompts.  Alternatively can be run in CI without prompts.
 
 * Unified CI
 * Dual MIT/Apache 2 license
+* No travis config
+* Dependabot
 
 ### 1. TypeScript
 

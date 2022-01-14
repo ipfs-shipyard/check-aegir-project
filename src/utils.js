@@ -101,6 +101,34 @@ async function ensureFileHasContents (projectDir, filePath, expectedContents) {
   }
 }
 
+async function ensureFileNotPresent (projectDir, filePath) {
+  const fileExists = fs.existsSync(path.join(projectDir, filePath))
+
+  if (fileExists) {
+    if (process.env.CI) {
+      throw new Error(`${filePath} exists`)
+    }
+
+    console.warn(chalk.yellow(`${filePath} exist`))
+
+    const { removeFile } = await prompt.get({
+      properties: {
+        removeFile: {
+          description: `Remove ${filePath}?`,
+          type: 'boolean',
+          default: true
+        }
+      }
+    })
+
+    if (!removeFile) {
+      throw new Error(`Not removing ${filePath} file`)
+    }
+
+    fs.rmSync(filePath)
+  }
+}
+
 function sortFields (obj) {
   if (!obj) {
     return
@@ -131,6 +159,7 @@ function sortManifest (manifest) {
 
 module.exports = {
   ensureFileHasContents,
+  ensureFileNotPresent,
   sortManifest,
   sortFields
 }

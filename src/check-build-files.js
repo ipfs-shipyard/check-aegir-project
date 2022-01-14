@@ -1,9 +1,9 @@
 'use strict'
+/* eslint-disable no-console */
 
-const fs = require('fs')
-const path = require('path')
 const {
-  ensureFileHasContents
+  ensureFileHasContents,
+  ensureFileNotPresent
 } = require('./utils')
 const http = require('https')
 
@@ -42,6 +42,7 @@ async function isManagedRepo (repoName) {
 }
 
 async function checkBuildFiles (projectDir, branchName, repoUrl) {
+  await ensureFileNotPresent(projectDir, '.travis.yml')
   await ensureFileHasContents(projectDir, '.github/dependabot.yml')
 
   // if this repo is managed by https://github.com/protocol/.github don't try to update the ci files
