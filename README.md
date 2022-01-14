@@ -25,6 +25,12 @@ Follow the prompts.  Alternatively can be run in CI without prompts.
 * Dual MIT/Apache 2 license
 * No travis config
 * Dependabot
+* Package JSON organised as:
+  * Project metadata
+  * Build info
+  * Scripts
+  * Dependencies
+  * Everything else alphabetically
 
 ### 1. TypeScript
 

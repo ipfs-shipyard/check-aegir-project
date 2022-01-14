@@ -153,6 +153,12 @@ function sortManifest (manifest) {
   sorted.devDependencies = sortFields(manifest.devDependencies)
   sorted.optionalDependencies = sortFields(manifest.optionalDependencies)
   sorted.peerDependencies = sortFields(manifest.peerDependencies)
+  sorted.peerDependenciesMeta = sortFields(manifest.peerDependenciesMeta)
+  sorted.bundledDependencies = (manifest.bundledDependencies || []).sort()
+
+  if (!sorted.bundledDependencies.length) {
+    delete sorted.bundledDependencies
+  }
 
   return sorted
 }

@@ -4,6 +4,7 @@
 
 const { semanticReleaseConfig } = require('../semantic-release-config')
 const merge = require('merge-options').bind({ ignoreUndefined: true })
+const { sortFields } = require('../utils')
 
 const manifestFields = {
   type: 'module',
@@ -58,7 +59,13 @@ async function typescriptManifest (projectDir, manifest, branchName, repoUrl, ho
     bugs: {
       url: `${repoUrl}/issues`
     },
-    ...manifestFields
+    ...manifestFields,
+    dependencies: manifest.dependencies,
+    devDependencies: manifest.devDependencies,
+    peerDependencies: manifest.peerDependencies,
+    peerDependenciesMeta: manifest.peerDependenciesMeta,
+    optionalDependencies: manifest.optionalDependencies,
+    bundledDependencies: manifest.bundledDependencies
   }
 
   proposedManifest.release = semanticReleaseConfig(branchName)
@@ -84,7 +91,7 @@ async function typescriptManifest (projectDir, manifest, branchName, repoUrl, ho
   }
 
   const rest = {
-    ...manifest
+    ...sortFields(manifest)
   }
 
   for (const key of Object.keys(proposedManifest)) {

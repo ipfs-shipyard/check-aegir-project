@@ -1,6 +1,7 @@
 'use strict'
 
 const merge = require('merge-options').bind({ ignoreUndefined: true })
+const { sortFields } = require('../utils')
 
 const manifestFields = {
   private: true,
@@ -35,13 +36,19 @@ async function monorepoManifest (projectDir, manifest, branchName, repoUrl, home
     bugs: {
       url: `${repoUrl}/issues`
     },
-    ...manifestFields
+    ...manifestFields,
+    dependencies: manifest.dependencies,
+    devDependencies: manifest.devDependencies,
+    peerDependencies: manifest.peerDependencies,
+    peerDependenciesMeta: manifest.peerDependenciesMeta,
+    optionalDependencies: manifest.optionalDependencies,
+    bundledDependencies: manifest.bundledDependencies
   }
 
   proposedManifest.scripts = merge(manifest.scripts, proposedManifest.scripts)
 
   const rest = {
-    ...manifest
+    ...sortFields(manifest)
   }
 
   for (const key of Object.keys(proposedManifest)) {

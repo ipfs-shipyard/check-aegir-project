@@ -2,6 +2,7 @@
 
 const { semanticReleaseConfig } = require('../semantic-release-config')
 const merge = require('merge-options').bind({ ignoreUndefined: true })
+const { sortFields } = require('../utils')
 
 const manifestFields = {
   main: 'src/index.js',
@@ -64,7 +65,13 @@ async function typedESMManifest (projectDir, manifest, branchName, repoUrl, home
     bugs: {
       url: `${repoUrl}/issues`
     },
-    ...manifestFields
+    ...manifestFields,
+    dependencies: manifest.dependencies,
+    devDependencies: manifest.devDependencies,
+    peerDependencies: manifest.peerDependencies,
+    peerDependenciesMeta: manifest.peerDependenciesMeta,
+    optionalDependencies: manifest.optionalDependencies,
+    bundledDependencies: manifest.bundledDependencies
   }
 
   proposedManifest.release = semanticReleaseConfig(branchName, 'dist')
@@ -73,7 +80,7 @@ async function typedESMManifest (projectDir, manifest, branchName, repoUrl, home
   proposedManifest.scripts = merge(proposedManifest.scripts, manifest.scripts)
 
   const rest = {
-    ...manifest
+    ...sortFields(manifest)
   }
 
   for (const key of Object.keys(proposedManifest)) {
