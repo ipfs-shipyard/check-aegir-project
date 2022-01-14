@@ -1,3 +1,7 @@
+'use strict'
+
+/* eslint-disable no-console */
+
 const fs = require('fs')
 const path = require('path')
 const prompt = require('prompt')
@@ -24,7 +28,12 @@ async function ensureFileHasContents (projectDir, filePath, expectedContents) {
       existingContents = JSON.stringify(JSON.parse(existingContents), null, 2)
     }
   } else {
+    if (process.env.CI) {
+      throw new Error(`${filePath} did not exist`)
+    }
+
     console.warn(chalk.yellow(`${filePath} did not exist`))
+
     const { createFile } = await prompt.get({
       properties: {
         createFile: {
@@ -50,6 +59,10 @@ async function ensureFileHasContents (projectDir, filePath, expectedContents) {
   if (existingContents === expectedContents) {
     console.info(chalk.green(`${filePath} contents ok`))
   } else {
+    if (process.env.CI) {
+      throw new Error(`${filePath} contents not ok`)
+    }
+
     console.warn(chalk.yellow(`${filePath} contents not ok`))
     console.warn('Diff', chalk.green('added'), chalk.red('removed'), chalk.grey('unchanged'))
 

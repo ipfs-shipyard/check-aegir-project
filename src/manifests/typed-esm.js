@@ -1,3 +1,4 @@
+'use strict'
 
 const { semanticReleaseConfig } = require('../semantic-release-config')
 const merge = require('merge-options').bind({ ignoreUndefined: true })

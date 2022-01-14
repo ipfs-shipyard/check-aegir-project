@@ -1,16 +1,126 @@
 {
-  "name": "check-pl-js-project",
+  "name": "check-aegir-project",
   "version": "0.0.0",
-  "description": "Ensure conformity between different js projects",
-  "main": "index.js",
+  "description": "Ensure conformity between different aegir-managed projects",
+  "homepage": "https://github.com/ipfs-shipyard/check-pl-js-project#readme",
+  "license": "Apache-2.0 OR MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ipfs-shipyard/check-pl-js-project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ipfs-shipyard/check-pl-js-project/issues"
+  },
+  "main": "src/index.js",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "eslintConfig": {
+    "extends": "ipfs"
+  },
+  "release": {
+    "branches": [
+      "master"
+    ],
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "conventionalcommits",
+          "releaseRules": [
+            {
+              "breaking": true,
+              "release": "major"
+            },
+            {
+              "revert": true,
+              "release": "patch"
+            },
+            {
+              "type": "feat",
+              "release": "minor"
+            },
+            {
+              "type": "fix",
+              "release": "patch"
+            },
+            {
+              "type": "chore",
+              "release": "patch"
+            },
+            {
+              "type": "docs",
+              "release": "patch"
+            },
+            {
+              "type": "test",
+              "release": "patch"
+            },
+            {
+              "scope": "no-release",
+              "release": false
+            }
+          ]
+        }
+      ],
+      [
+        "@semantic-release/release-notes-generator",
+        {
+          "preset": "conventionalcommits",
+          "presetConfig": {
+            "types": [
+              {
+                "type": "feat",
+                "section": "Features"
+              },
+              {
+                "type": "fix",
+                "section": "Bug Fixes"
+              },
+              {
+                "type": "chore",
+                "section": "Trivial Changes"
+              },
+              {
+                "type": "docs",
+                "section": "Trivial Changes"
+              },
+              {
+                "type": "test",
+                "section": "Tests"
+              }
+            ]
+          }
+        }
+      ],
+      "@semantic-release/changelog",
+      [
+        "@semantic-release/npm",
+        {
+          "pkgRoot": "dist"
+        }
+      ],
+      "@semantic-release/github",
+      "@semantic-release/git"
+    ]
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "standard"
+    "test": "aegir test",
+    "lint": "aegir lint",
+    "dep-check": "aegir dep-check",
+    "build": "aegir build",
+    "test:chrome": "npm run test -- -t browser --cov",
+    "test:chrome-webworker": "npm run test -- -t webworker",
+    "test:firefox": "npm run test -- -t browser -- --browser firefox",
+    "test:firefox-webworker": "npm run test -- -t webworker -- --browser firefox",
+    "test:node": "npm run test -- -t node --cov",
+    "test:electron-main": "npm run test -- -t electron-main",
+    "release": "semantic-release"
   },
   "author": "",
-  "license": "ISC",
   "bin": {
-    "check-project": "./src/index.js"
+    "check-aegir-project": "./src/index.js"
   },
   "dependencies": {
     "chalk": "^4.1.2",
@@ -21,6 +131,6 @@
     "prompt": "^1.2.1"
   },
   "devDependencies": {
-    "standard": "^16.0.4"
+    "aegir": "^36.1.3"
   }
 }

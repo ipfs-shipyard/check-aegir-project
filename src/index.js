@@ -1,6 +1,8 @@
 #! /usr/bin/env node
 /* eslint-disable no-console */
 
+'use strict'
+
 const fs = require('fs')
 const path = require('path')
 const execa = require('execa')
@@ -9,6 +11,7 @@ const glob = require('it-glob')
 const { monorepoManifest } = require('./manifests/monorepo')
 const { typedESMManifest } = require('./manifests/typed-esm')
 const { typescriptManifest } = require('./manifests/typescript')
+const { untypedCJSManifest } = require('./manifests/untyped-cjs')
 const { checkLicenseFiles } = require('./check-licence-files')
 const { checkBuildFiles } = require('./check-build-files')
 const { checkMonorepoFiles } = require('./check-monorepo-files')
@@ -17,15 +20,65 @@ const {
   ensureFileHasContents
 } = require('./utils')
 
+async function getConfig (projectDir) {
+  if (process.env.CI) {
+    const branchName = await execa('git', ['symbolic-ref', '--short', 'refs/remotes/origin/HEAD'], {
+      cwd: projectDir,
+      path: process.env.PATH
+    })
+      .then(res => execa('basename', [res.stdout]))
+      .then(res => res.stdout)
+      .catch(() => {
+        return 'master'
+      })
+    const repoUrl = await execa('git', ['remote', 'get-url', 'origin'], {
+      cwd: projectDir,
+      path: process.env.PATH
+    })
+      .then(res => res.stdout.split(':')[1].split('.git')[0])
+      .then(res => `https://github.com/${res}`)
+      .catch(() => {
+        return ''
+      })
+
+    return {
+      projectDir,
+      branchName,
+      repoUrl
+    }
+  }
+
+  prompt.start()
+
+  return await prompt.get({
+    properties: {
+      branchName: {
+        default: await execa('git', ['symbolic-ref', '--short', 'refs/remotes/origin/HEAD'], {
+          cwd: projectDir,
+          path: process.env.PATH
+        })
+          .then(res => execa('basename', [res.stdout]))
+          .then(res => res.stdout)
+          .catch(() => {
+            return 'master'
+          })
+      },
+      repoUrl: {
+        default: await execa('git', ['remote', 'get-url', 'origin'], {
+          cwd: projectDir,
+          path: process.env.PATH
+        })
+          .then(res => res.stdout.split(':')[1].split('.git')[0])
+          .then(res => `https://github.com/${res}`)
+          .catch(() => {
+            return ''
+          })
+      }
+    }
+  })
+}
+
 async function processMonorepo (projectDir, manifest, branchName, repoUrl) {
-  let proposedManifest = await monorepoManifest(projectDir, manifest, branchName, repoUrl)
-  proposedManifest = sortManifest(proposedManifest)
-
-  await ensureFileHasContents(projectDir, 'package.json', JSON.stringify(proposedManifest, null, 2))
-  await checkLicenseFiles(projectDir)
-  await checkBuildFiles(projectDir, branchName)
-  await checkMonorepoFiles(projectDir)
-
   const workspaces = manifest.workspaces
 
   if (!workspaces || !Array.isArray(workspaces)) {
@@ -48,14 +101,26 @@ async function processMonorepo (projectDir, manifest, branchName, repoUrl) {
       await processModule(subProjectDir, pkg, branchName, repoUrl, homePage)
     }
   }
+
+  let proposedManifest = await monorepoManifest(projectDir, manifest, branchName, repoUrl)
+  proposedManifest = sortManifest(proposedManifest)
+
+  await ensureFileHasContents(projectDir, 'package.json', JSON.stringify(proposedManifest, null, 2))
+  await checkLicenseFiles(projectDir)
+  await checkBuildFiles(projectDir, branchName, repoUrl)
+  await checkMonorepoFiles(projectDir)
 }
 
 async function processProject (projectDir, manifest, branchName, repoUrl) {
   await processModule(projectDir, manifest, branchName, repoUrl)
-  await checkBuildFiles(projectDir, branchName)
+  await checkBuildFiles(projectDir, branchName, repoUrl)
 }
 
 async function processModule (projectDir, manifest, branchName, repoUrl, homePage = repoUrl) {
+  if (!manifest.devDependencies.aegir) {
+    throw new Error('Not an aegir project')
+  }
+
   const esm = manifest.type === 'module'
   const cjs = manifest.type !== 'module'
   const types = Boolean(manifest.types)
@@ -85,8 +150,10 @@ async function processModule (projectDir, manifest, branchName, repoUrl, homePag
     proposedManifest = await typedESMManifest(projectDir, manifest, branchName, repoUrl, homePage)
   } else if (typedCJS) {
     console.info('Typed CJS project detected')
+    proposedManifest = await untypedCJSManifest(projectDir, manifest, branchName, repoUrl, homePage)
   } else if (untypedCJS) {
     console.info('Untyped CJS project detected')
+    proposedManifest = await untypedCJSManifest(projectDir, manifest, branchName, repoUrl, homePage)
   }
 
   proposedManifest = sortManifest(proposedManifest)
@@ -96,51 +163,12 @@ async function processModule (projectDir, manifest, branchName, repoUrl, homePag
 }
 
 async function main () {
-  prompt.start()
-
-  const { projectDir } = await prompt.get({
-    properties: {
-      projectDir: {
-        default: process.argv[2] || process.cwd()
-      }
-    }
-  })
-
-  const { branchName } = await prompt.get({
-    properties: {
-      branchName: {
-        default: await execa('git', ['symbolic-ref', '--short', 'refs/remotes/origin/HEAD'], {
-          cwd: projectDir,
-          path: process.env.PATH
-        })
-          .then(res => execa('basename', [res.stdout]))
-          .then(res => res.stdout)
-          .catch(() => {
-            return 'master'
-          })
-      }
-    }
-  })
+  const projectDir = process.argv[2] || process.cwd()
+  const { branchName, repoUrl } = await getConfig(projectDir)
 
   const manifest = JSON.parse(fs.readFileSync(path.join(projectDir, 'package.json'), {
     encoding: 'utf-8'
   }))
-
-  const { repoUrl } = await prompt.get({
-    properties: {
-      repoUrl: {
-        default: await execa('git', ['remote', 'get-url', 'origin'], {
-          cwd: projectDir,
-          path: process.env.PATH
-        })
-          .then(res => res.stdout.split(':')[1].split('.git')[0])
-          .then(res => `https://github.com/${res}`)
-          .catch(() => {
-            return ''
-          })
-      }
-    }
-  })
 
   const monorepo = manifest.workspaces != null
 

@@ -1,21 +1,21 @@
-# check-pl-js-project
+# check-aegir-project
 
-A CLI tool to ensure conformity between the different types of [PL](https://protocol.ai/) js projects.
+A CLI tool to ensure conformity between the different types of [aegir]([https://npmjs](https://www.npmjs.com/package/aegir) js projects.
 
 ## Install
 
 ```console
-$ npm i check-pl-js-project
+$ npm i check-aegir-project
 ```
 
 ## Usage
 
 ```console
-$ check-project (in project dir)
-$ check-project /path/to/project/dir
+$ check-aegir-project (in project dir)
+$ check-aegir-project /path/to/project/dir
 ```
 
-Follow the prompts
+Follow the prompts.  Alternatively can be run in CI without prompts.
 
 ## Supported project types
 
@@ -38,8 +38,10 @@ Follow the prompts
 
 ### 3. Typed CJS
 
-TODO
+* Source in `/src`
+* Tests in `/test`
 
 ### 4. Untyped CJS
 
-TODO
+* Source in `/src`
+* Tests in `/test`

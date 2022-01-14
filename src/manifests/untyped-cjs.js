@@ -1,38 +1,23 @@
 'use strict'
 
-/* eslint-disable no-console */
-
 const { semanticReleaseConfig } = require('../semantic-release-config')
 const merge = require('merge-options').bind({ ignoreUndefined: true })
 
 const manifestFields = {
-  type: 'module',
-  types: './dist/src/index.d.ts',
-  typesVersions: undefined,
+  main: 'src/index.js',
   files: [
     'src',
-    'dist/src',
-    '!dist/test',
-    '!**/*.tsbuildinfo'
+    'dist'
   ],
-  exports: {
-    '.': {
-      import: './dist/src/index.js'
-    }
-  },
   eslintConfig: {
-    extends: 'ipfs',
-    parserOptions: {
-      sourceType: 'module'
-    }
+    extends: 'ipfs'
   },
   release: {},
   scripts: {
     lint: 'aegir lint',
-    'dep-check': 'aegir dep-check dist/src/**/*.js dist/test/**/*.js',
-    build: 'tsc',
-    pretest: 'npm run build',
-    test: 'aegir test -f ./dist/test',
+    'dep-check': 'aegir dep-check',
+    build: 'aegir build',
+    test: 'aegir test',
     'test:chrome': 'npm run test -- -t browser --cov',
     'test:chrome-webworker': 'npm run test -- -t webworker',
     'test:firefox': 'npm run test -- -t browser -- --browser firefox',
@@ -43,14 +28,13 @@ const manifestFields = {
   }
 }
 
-async function typescriptManifest (projectDir, manifest, branchName, repoUrl, homePage = repoUrl) {
+async function untypedCJSManifest (projectDir, manifest, branchName, repoUrl, homePage = repoUrl) {
   let proposedManifest = {
     name: manifest.name,
     version: manifest.version,
     description: manifest.description,
-    license: 'Apache-2.0 OR MIT',
-    author: manifest.author,
     homepage: `${homePage}#readme`,
+    license: 'Apache-2.0 OR MIT',
     repository: {
       type: 'git',
       url: `git+${repoUrl}.git`
@@ -61,27 +45,9 @@ async function typescriptManifest (projectDir, manifest, branchName, repoUrl, ho
     ...manifestFields
   }
 
-  proposedManifest.release = semanticReleaseConfig(branchName)
-  proposedManifest.exports = merge(manifest.exports, proposedManifest.exports)
+  proposedManifest.release = semanticReleaseConfig(branchName, 'dist')
   proposedManifest.eslintConfig = merge(manifest.eslintConfig, proposedManifest.eslintConfig)
   proposedManifest.scripts = merge(manifest.scripts, proposedManifest.scripts)
-
-  if (Object.keys(proposedManifest.exports).length > 1) {
-    console.info('Multiple exports detected')
-
-    proposedManifest.typesVersions = {
-      '*': {
-        '*': [
-          '*',
-          '*/index',
-          'dist/*',
-          'dist/*/index',
-          'dist/src/*',
-          'dist/src/*/index'
-        ]
-      }
-    }
-  }
 
   const rest = {
     ...manifest
@@ -102,5 +68,5 @@ async function typescriptManifest (projectDir, manifest, branchName, repoUrl, ho
 }
 
 module.exports = {
-  typescriptManifest
+  untypedCJSManifest
 }

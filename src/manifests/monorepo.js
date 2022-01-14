@@ -1,3 +1,5 @@
+'use strict'
+
 const merge = require('merge-options').bind({ ignoreUndefined: true })
 
 const manifestFields = {
