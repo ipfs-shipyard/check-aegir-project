@@ -28,22 +28,19 @@ async function typedESMManifest (projectDir, manifest, branchName, repoUrl, home
       '*',
       '!**/*.tsbuildinfo'
     ],
-    exports: {
+    exports: merge({
       '.': {
         import: './src/index.js'
       }
-    },
-    eslintConfig: {
+    }, manifest.exports),
+    eslintConfig: merge({
       extends: 'ipfs',
       parserOptions: {
         sourceType: 'module'
       }
-    },
+    }, manifest.eslintConfig),
     release: semanticReleaseConfig(branchName, 'dist')
   }, repoUrl, homePage)
-
-  proposedManifest.exports = merge(manifest.exports, proposedManifest.exports)
-  proposedManifest.eslintConfig = merge(proposedManifest.eslintConfig, manifest.eslintConfig)
 
   const rest = {
     ...sortFields(manifest)

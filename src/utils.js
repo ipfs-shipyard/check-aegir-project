@@ -17,6 +17,8 @@ async function ensureFileHasContents (projectDir, filePath, expectedContents) {
     })
   }
 
+  expectedContents = expectedContents.trim() + '\n'
+
   let existingContents = ''
 
   if (fileExists) {

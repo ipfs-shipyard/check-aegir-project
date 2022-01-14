@@ -24,7 +24,7 @@ async function typescriptManifest (projectDir, manifest, branchName, repoUrl, ho
       '.': {
         import: './dist/src/index.js'
       }
-    }, proposedManifest.exports),
+    }, manifest.exports),
     eslintConfig: merge({
       extends: 'ipfs',
       parserOptions: {
@@ -41,9 +41,13 @@ async function typescriptManifest (projectDir, manifest, branchName, repoUrl, ho
       '*': {
         '*': [
           '*',
-          '*/index',
           'dist/*',
-          'dist/*/index',
+          'dist/src/*',
+          'dist/src/*/index'
+        ],
+        'src/*': [
+          '*',
+          'dist/*',
           'dist/src/*',
           'dist/src/*/index'
         ]
