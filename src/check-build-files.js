@@ -1,5 +1,7 @@
 'use strict'
 
+/* eslint-disable no-console */
+
 const {
   ensureFileHasContents,
   ensureFileNotPresent
@@ -47,6 +49,7 @@ async function checkBuildFiles (projectDir, branchName, repoUrl) {
   const isManaged = await isManagedRepo(repoUrl.replace('https://github.com/', ''))
 
   if (isManaged) {
+    console.info('CI files are managed by https://github.com/protocol/.github')
     return
   }
 

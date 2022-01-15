@@ -12,6 +12,7 @@ const { monorepoManifest } = require('./manifests/monorepo')
 const { typedESMManifest } = require('./manifests/typed-esm')
 const { typescriptManifest } = require('./manifests/typescript')
 const { untypedCJSManifest } = require('./manifests/untyped-cjs')
+const { typedCJSManifest } = require('./manifests/typed-cjs')
 const { checkLicenseFiles } = require('./check-licence-files')
 const { checkBuildFiles } = require('./check-build-files')
 const { checkMonorepoFiles } = require('./check-monorepo-files')
@@ -102,7 +103,7 @@ async function processMonorepo (projectDir, manifest, branchName, repoUrl) {
     }
   }
 
-  let proposedManifest = await monorepoManifest(projectDir, manifest, branchName, repoUrl)
+  let proposedManifest = await monorepoManifest(manifest, repoUrl)
   proposedManifest = sortManifest(proposedManifest)
 
   await ensureFileHasContents(projectDir, 'package.json', JSON.stringify(proposedManifest, null, 2))
@@ -148,16 +149,16 @@ async function processModule (projectDir, manifest, branchName, repoUrl, homePag
 
   if (typescript) {
     console.info('TypeScript project detected')
-    proposedManifest = await typescriptManifest(projectDir, manifest, branchName, repoUrl, homePage)
+    proposedManifest = await typescriptManifest(manifest, branchName, repoUrl, homePage)
   } else if (typedESM) {
     console.info('Typed ESM project detected')
-    proposedManifest = await typedESMManifest(projectDir, manifest, branchName, repoUrl, homePage)
+    proposedManifest = await typedESMManifest(manifest, branchName, repoUrl, homePage)
   } else if (typedCJS) {
     console.info('Typed CJS project detected')
-    proposedManifest = await untypedCJSManifest(projectDir, manifest, branchName, repoUrl, homePage)
+    proposedManifest = await typedCJSManifest(manifest, branchName, repoUrl, homePage)
   } else if (untypedCJS) {
     console.info('Untyped CJS project detected')
-    proposedManifest = await untypedCJSManifest(projectDir, manifest, branchName, repoUrl, homePage)
+    proposedManifest = await untypedCJSManifest(manifest, branchName, repoUrl, homePage)
   }
 
   proposedManifest = sortManifest(proposedManifest)

@@ -170,8 +170,9 @@ function constructManifest (manifest, manifestFields, repoUrl, homePage = repoUr
     name: manifest.name,
     version: manifest.version,
     description: manifest.description,
-    homepage: `${homePage}#readme`,
+    author: manifest.author,
     license: 'Apache-2.0 OR MIT',
+    homepage: `${homePage}#readme`,
     repository: {
       type: 'git',
       url: `git+${repoUrl}.git`
@@ -179,6 +180,12 @@ function constructManifest (manifest, manifestFields, repoUrl, homePage = repoUr
     bugs: {
       url: `${repoUrl}/issues`
     },
+    keywords: manifest.keywords ? manifest.keywords.sort() : undefined,
+    engines: {
+      node: '>=16.0.0',
+      npm: '>=7.0.0'
+    },
+    bin: manifest.bin,
     ...manifestFields,
     scripts: manifest.scripts,
     dependencies: manifest.dependencies,

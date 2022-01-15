@@ -7,7 +7,7 @@ const {
   constructManifest
 } = require('../utils')
 
-async function untypedCJSManifest (projectDir, manifest, branchName, repoUrl, homePage = repoUrl) {
+async function untypedCJSManifest (manifest, branchName, repoUrl, homePage = repoUrl) {
   let proposedManifest = constructManifest(manifest, {
     main: 'src/index.js',
     files: [

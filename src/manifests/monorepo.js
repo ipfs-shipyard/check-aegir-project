@@ -5,7 +5,7 @@ const {
   constructManifest
 } = require('../utils')
 
-async function monorepoManifest (projectDir, manifest, branchName, repoUrl, homePage = repoUrl) {
+async function monorepoManifest (manifest, repoUrl, homePage = repoUrl) {
   let proposedManifest = constructManifest(manifest, {
     private: true
   }, repoUrl, homePage)

@@ -7,7 +7,7 @@ const {
   constructManifest
 } = require('../utils')
 
-async function typedESMManifest (projectDir, manifest, branchName, repoUrl, homePage = repoUrl) {
+async function typedESMManifest (manifest, branchName, repoUrl, homePage = repoUrl) {
   let proposedManifest = constructManifest(manifest, {
     main: 'src/index.js',
     type: 'module',

@@ -9,7 +9,7 @@ const {
   constructManifest
 } = require('../utils')
 
-async function typescriptManifest (projectDir, manifest, branchName, repoUrl, homePage = repoUrl) {
+async function typescriptManifest (manifest, branchName, repoUrl, homePage = repoUrl) {
   let proposedManifest = constructManifest(manifest, {
     type: 'module',
     types: './dist/src/index.d.ts',

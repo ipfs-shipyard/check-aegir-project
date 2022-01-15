@@ -7,7 +7,7 @@ const {
   constructManifest
 } = require('../utils')
 
-async function untypedCJSManifest (projectDir, manifest, branchName, repoUrl, homePage = repoUrl) {
+async function typedCJSManifest (manifest, branchName, repoUrl, homePage = repoUrl) {
   let proposedManifest = constructManifest(manifest, {
     main: 'src/index.js',
     types: 'dist/src/index.d.ts',
@@ -54,5 +54,5 @@ async function untypedCJSManifest (projectDir, manifest, branchName, repoUrl, ho
 }
 
 module.exports = {
-  untypedCJSManifest
+  typedCJSManifest
 }
