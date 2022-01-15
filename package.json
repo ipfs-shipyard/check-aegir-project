@@ -1,6 +1,6 @@
 {
   "name": "check-aegir-project",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ensure conformity between different aegir-managed projects",
   "author": "Alex Potsides <alex@achingbrain.net>",
   "license": "Apache-2.0 OR MIT",

@@ -1,3 +1,10 @@
+### [1.0.1](https://github.com/ipfs-shipyard/check-pl-js-project/compare/v1.0.0...v1.0.1) (2022-01-15)
+
+
+### Bug Fixes
+
+* field order ([c3b5755](https://github.com/ipfs-shipyard/check-pl-js-project/commit/c3b575568745ada70ecf083c0c0527fc35c9f17e))
+
 ## 1.0.0 (2022-01-14)
 
 
