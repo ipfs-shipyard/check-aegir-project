@@ -1,6 +1,6 @@
 # check-aegir-project
 
-A CLI tool to ensure conformity between the different types of [aegir]([https://npmjs](https://www.npmjs.com/package/aegir) js projects.
+A CLI tool to ensure conformity between the different types of [aegir](https://www.npmjs.com/package/aegir) js projects.
 
 ## Install
 
