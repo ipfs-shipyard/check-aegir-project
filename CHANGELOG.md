@@ -1,3 +1,10 @@
+### [1.0.2](https://github.com/ipfs-shipyard/check-pl-js-project/compare/v1.0.1...v1.0.2) (2022-01-16)
+
+
+### Trivial Changes
+
+* update readme ([2f51aee](https://github.com/ipfs-shipyard/check-pl-js-project/commit/2f51aeecf9bd01eea9724aa61835a7bf43822565))
+
 ### [1.0.1](https://github.com/ipfs-shipyard/check-pl-js-project/compare/v1.0.0...v1.0.1) (2022-01-15)
 
 
