@@ -1,3 +1,10 @@
+### [1.0.3](https://github.com/ipfs-shipyard/check-pl-js-project/compare/v1.0.2...v1.0.3) (2022-02-05)
+
+
+### Bug Fixes
+
+* update project defs ([716dad0](https://github.com/ipfs-shipyard/check-pl-js-project/commit/716dad0f4c6f1db9587d6cd2520dbdc767623691))
+
 ### [1.0.2](https://github.com/ipfs-shipyard/check-pl-js-project/compare/v1.0.1...v1.0.2) (2022-01-16)
 
 
