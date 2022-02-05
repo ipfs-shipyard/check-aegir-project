@@ -26,13 +26,17 @@ async function typedESMManifest (manifest, branchName, repoUrl, homePage = repoU
     },
     files: [
       '*',
-      '!**/*.tsbuildinfo'
+      '!**/*.tsbuildinfo',
+      '!**/browser-test',
+      '!**/node-test'
     ],
-    exports: merge({
-      '.': {
-        import: './src/index.js'
-      }
-    }, manifest.exports),
+    exports: sortFields(
+      merge({
+        '.': {
+          import: './src/index.js'
+        }
+      }, manifest.exports)
+    ),
     eslintConfig: merge({
       extends: 'ipfs',
       parserOptions: {

@@ -10,6 +10,7 @@ const http = require('https')
 
 const managedRepos = 'https://raw.githubusercontent.com/protocol/.github/master/configs/js.json'
 const ciFileUrl = 'https://raw.githubusercontent.com/protocol/.github/master/templates/.github/workflows/js-test-and-release.yml'
+const mergeFileUrl = 'https://raw.githubusercontent.com/protocol/.github/master/templates/.github/workflows/automerge.yml'
 
 async function download (url) {
   return new Promise((resolve, reject) => {
@@ -57,6 +58,10 @@ async function checkBuildFiles (projectDir, branchName, repoUrl) {
   defaultCiContent = defaultCiContent.replace(/\$default-branch/g, branchName)
 
   await ensureFileHasContents(projectDir, '.github/workflows/js-test-and-release.yml', defaultCiContent)
+
+  const defaultMergeContent = await download(mergeFileUrl)
+
+  await ensureFileHasContents(projectDir, '.github/workflows/automerge.yml', defaultMergeContent)
 }
 
 module.exports = {

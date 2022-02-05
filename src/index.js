@@ -118,12 +118,12 @@ async function processProject (projectDir, manifest, branchName, repoUrl) {
 }
 
 function isAegirProject (manifest) {
-  return Boolean(manifest.devDependencies.aegir) || Boolean(manifest.dependencies.aegir)
+  return Boolean(manifest.devDependencies && manifest.devDependencies.aegir) || Boolean(manifest.dependencies && manifest.dependencies.aegir)
 }
 
 async function processModule (projectDir, manifest, branchName, repoUrl, homePage = repoUrl) {
   if (!isAegirProject(manifest)) {
-    throw new Error('Not an aegir project')
+    throw new Error(`"${projectDir}" is not an aegir project`)
   }
 
   const esm = manifest.type === 'module'
@@ -134,18 +134,46 @@ async function processModule (projectDir, manifest, branchName, repoUrl, homePag
   // our project types:
 
   // 1. typescript - ESM only, no main, only exports
-  const typescript = esm && !hasMain
+  let typescript = esm && !hasMain
 
   // 2. typedESM - ESM/CJS dual publish
-  const typedESM = esm && hasMain && types
+  let typedESM = esm && hasMain && types
 
   // 3. CJS, no types
-  const typedCJS = cjs && hasMain && types
+  let typedCJS = cjs && hasMain && types
 
   // 3. CJS, no types
-  const untypedCJS = cjs && hasMain
+  let untypedCJS = cjs && hasMain
 
   let proposedManifest = {}
+
+  if (!typescript && !typedESM && !typedCJS && !untypedCJS) {
+    console.info('Cannot detect project type')
+    const { projectType } = await prompt.get({
+      properties: {
+        projectType: {
+          description: 'Project type: typescript | typedESM | typedCJS | untypedCJS',
+          required: true,
+          conform: (value) => {
+            return ['typescript', 'typedESM', 'typedCJS', 'untypedCJS'].includes(value)
+          },
+          default: 'typescript'
+        }
+      }
+    })
+
+    if (projectType === 'typescript') {
+      typescript = true
+    } else if (projectType === 'typedESM') {
+      typedESM = true
+    } else if (projectType === 'typedCJS') {
+      typedCJS = true
+    } else if (projectType === 'untypedCJS') {
+      untypedCJS = true
+    } else {
+      throw new Error('Could not determine project type')
+    }
+  }
 
   if (typescript) {
     console.info('TypeScript project detected')
@@ -159,6 +187,8 @@ async function processModule (projectDir, manifest, branchName, repoUrl, homePag
   } else if (untypedCJS) {
     console.info('Untyped CJS project detected')
     proposedManifest = await untypedCJSManifest(manifest, branchName, repoUrl, homePage)
+  } else {
+    throw new Error('Cannot determine project type')
   }
 
   proposedManifest = sortManifest(proposedManifest)

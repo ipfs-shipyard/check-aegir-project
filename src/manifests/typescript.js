@@ -20,11 +20,13 @@ async function typescriptManifest (manifest, branchName, repoUrl, homePage = rep
       '!dist/test',
       '!**/*.tsbuildinfo'
     ],
-    exports: merge({
-      '.': {
-        import: './dist/src/index.js'
-      }
-    }, manifest.exports),
+    exports: sortFields(
+      merge({
+        '.': {
+          import: './dist/src/index.js'
+        }
+      }, manifest.exports)
+    ),
     eslintConfig: merge({
       extends: 'ipfs',
       parserOptions: {
@@ -69,6 +71,8 @@ async function typescriptManifest (manifest, branchName, repoUrl, homePage = rep
     contributors: undefined,
     leadMaintainer: undefined
   }
+
+  delete proposedManifest.main
 
   return proposedManifest
 }
