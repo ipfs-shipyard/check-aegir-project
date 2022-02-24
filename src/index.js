@@ -20,6 +20,7 @@ const {
   sortManifest,
   ensureFileHasContents
 } = require('./utils')
+const semver = require('semver')
 
 async function getConfig (projectDir) {
   if (process.env.CI) {
@@ -86,6 +87,8 @@ async function processMonorepo (projectDir, manifest, branchName, repoUrl) {
     throw new Error('No monorepo workspaces found')
   }
 
+  const projectDirs = []
+
   for (const workspace of workspaces) {
     for await (const subProjectDir of glob('.', workspace, {
       cwd: projectDir,
@@ -100,8 +103,13 @@ async function processMonorepo (projectDir, manifest, branchName, repoUrl) {
       console.info('Found monorepo project', pkg.name)
 
       await processModule(subProjectDir, pkg, branchName, repoUrl, homePage)
+
+      projectDirs.push(subProjectDir)
     }
   }
+
+  await alignMonorepoProjectDependencies(projectDirs)
+  await configureMonorepoProjectReferences(projectDirs)
 
   let proposedManifest = await monorepoManifest(manifest, repoUrl)
   proposedManifest = sortManifest(proposedManifest)
@@ -110,6 +118,131 @@ async function processMonorepo (projectDir, manifest, branchName, repoUrl) {
   await checkLicenseFiles(projectDir)
   await checkBuildFiles(projectDir, branchName, repoUrl)
   await checkMonorepoFiles(projectDir)
+}
+
+async function alignMonorepoProjectDependencies (projectDirs) {
+  console.info('Align monorepo project dependencies')
+
+  const deps = {}
+  const devDeps = {}
+  const optionalDeps = {}
+  const peerDeps = {}
+
+  // first loop over every project and choose the most recent version of a given dep
+  for (const projectDir of projectDirs) {
+    const pkg = JSON.parse(fs.readFileSync(path.join(projectDir, 'package.json'), {
+      encoding: 'utf-8'
+    }))
+
+    chooseVersions(pkg.dependencies || {}, deps)
+    chooseVersions(pkg.devDependencies || {}, devDeps)
+    chooseVersions(pkg.optionalDeps || {}, optionalDeps)
+    chooseVersions(pkg.peerDeps || {}, peerDeps)
+  }
+
+  // now propose the most recent version of a dep for all projects
+  for (const projectDir of projectDirs) {
+    const pkg = JSON.parse(fs.readFileSync(path.join(projectDir, 'package.json'), {
+      encoding: 'utf-8'
+    }))
+
+    selectVersions(pkg.dependencies || {}, deps)
+    selectVersions(pkg.devDependencies || {}, devDeps)
+    selectVersions(pkg.optionalDeps || {}, optionalDeps)
+    selectVersions(pkg.peerDeps || {}, peerDeps)
+
+    await ensureFileHasContents(projectDir, 'package.json', JSON.stringify(pkg, null, 2))
+  }
+}
+
+function chooseVersions (deps, list) {
+  Object.entries(deps).forEach(([key, value]) => {
+    // not seen this dep before
+    if (!list[key]) {
+      list[key] = value
+      return
+    }
+
+    const existingVersion = semver.minVersion(list[key])
+    const moduleVersion = semver.minVersion(value)
+
+    // take the most recent range or version
+    const res = semver.compare(existingVersion, moduleVersion)
+
+    if (res === -1) {
+      list[key] = value
+    }
+  })
+}
+
+function selectVersions (deps, list) {
+  Object.entries(list).forEach(([key, value]) => {
+    if (deps[key] != null) {
+      deps[key] = value
+    }
+  })
+}
+
+async function configureMonorepoProjectReferences (projectDirs) {
+  console.info('Configure monorepo project references (typescript only)')
+
+  const references = {}
+
+  // first loop over every project and choose the most recent version of a given dep
+  for (const projectDir of projectDirs) {
+    const pkg = JSON.parse(fs.readFileSync(path.join(projectDir, 'package.json'), {
+      encoding: 'utf-8'
+    }))
+
+    references[pkg.name] = projectDir
+  }
+
+  // now ensure the references are set up correctly
+  // now propose the most recent version of a dep for all projects
+  for (const projectDir of projectDirs) {
+    if (!fs.existsSync(path.join(projectDir, 'tsconfig.json'))) {
+      continue
+    }
+
+    const pkg = JSON.parse(fs.readFileSync(path.join(projectDir, 'package.json'), {
+      encoding: 'utf-8'
+    }))
+
+    const tsconfig = JSON.parse(fs.readFileSync(path.join(projectDir, 'tsconfig.json'), {
+      encoding: 'utf-8'
+    }))
+
+    const refs = new Set()
+
+    addReferences(pkg.dependencies || {}, references, refs)
+    addReferences(pkg.devDependencies || {}, references, refs)
+    addReferences(pkg.optionalDeps || {}, references, refs)
+    addReferences(pkg.peerDeps || {}, references, refs)
+
+    tsconfig.references = Array.from(refs.values()).map(refDir => {
+      return {
+        path: path.relative(projectDir, refDir)
+      }
+    })
+
+    tsconfig.references = tsconfig.references.sort((a, b) => a.path.localeCompare(b.path))
+
+    if (tsconfig.references.length === 0) {
+      delete tsconfig.references
+    }
+
+    await ensureFileHasContents(projectDir, 'tsconfig.json', JSON.stringify(tsconfig, null, 2))
+  }
+}
+
+function addReferences (deps, references, refs) {
+  Object.keys(deps).forEach(key => {
+    if (references[key] == null) {
+      return
+    }
+
+    refs.add(references[key])
+  })
 }
 
 async function processProject (projectDir, manifest, branchName, repoUrl) {

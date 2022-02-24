@@ -10,6 +10,8 @@ const {
 } = require('./utils')
 
 async function checkLicenseFiles (projectDir) {
+  console.info('Check license files')
+
   const pkg = JSON.parse(fs.readFileSync(path.join(projectDir, 'package.json'), {
     encoding: 'utf-8'
   }))

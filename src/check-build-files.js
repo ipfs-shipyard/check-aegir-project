@@ -43,6 +43,8 @@ async function isManagedRepo (repoName) {
 }
 
 async function checkBuildFiles (projectDir, branchName, repoUrl) {
+  console.info('Check build files')
+
   await ensureFileNotPresent(projectDir, '.travis.yml')
   await ensureFileHasContents(projectDir, '.github/dependabot.yml')
 

@@ -85,7 +85,7 @@ async function ensureFileHasContents (projectDir, filePath, expectedContents) {
     const { overwriteFile } = await prompt.get({
       properties: {
         overwriteFile: {
-          description: `Overwrite ${filePath}?`,
+          description: `Overwrite ${path.join(projectDir, filePath)}?`,
           type: 'boolean',
           default: true
         }

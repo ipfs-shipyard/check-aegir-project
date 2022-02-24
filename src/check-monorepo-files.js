@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 'use strict'
 
 const fs = require('fs')
@@ -7,6 +9,8 @@ const {
 } = require('./utils')
 
 async function checkMonorepoFiles (projectDir) {
+  console.info('Check monorepo files')
+
   const pkg = JSON.parse(fs.readFileSync(path.join(projectDir, 'package.json'), {
     encoding: 'utf-8'
   }))
