@@ -1,3 +1,15 @@
+## [1.1.0](https://github.com/ipfs-shipyard/check-pl-js-project/compare/v1.0.3...v1.1.0) (2022-02-27)
+
+
+### Features
+
+* align monorepo package deps and configure ts project references ([1f4c88a](https://github.com/ipfs-shipyard/check-pl-js-project/commit/1f4c88a17b05971d7b756d66607fefc642c9abe3))
+
+
+### Bug Fixes
+
+* align sibling versions in monorepo ([c9cedb0](https://github.com/ipfs-shipyard/check-pl-js-project/commit/c9cedb071693a4d0a9995651a6a71f31064cad60))
+
 ### [1.0.3](https://github.com/ipfs-shipyard/check-pl-js-project/compare/v1.0.2...v1.0.3) (2022-02-05)
 
 
