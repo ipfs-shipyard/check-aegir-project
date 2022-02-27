@@ -123,6 +123,7 @@ async function processMonorepo (projectDir, manifest, branchName, repoUrl) {
 async function alignMonorepoProjectDependencies (projectDirs) {
   console.info('Align monorepo project dependencies')
 
+  const siblingVersions = {}
   const deps = {}
   const devDeps = {}
   const optionalDeps = {}
@@ -133,6 +134,8 @@ async function alignMonorepoProjectDependencies (projectDirs) {
     const pkg = JSON.parse(fs.readFileSync(path.join(projectDir, 'package.json'), {
       encoding: 'utf-8'
     }))
+
+    siblingVersions[pkg.name] = `^${pkg.version}`
 
     chooseVersions(pkg.dependencies || {}, deps)
     chooseVersions(pkg.devDependencies || {}, devDeps)
@@ -146,10 +149,10 @@ async function alignMonorepoProjectDependencies (projectDirs) {
       encoding: 'utf-8'
     }))
 
-    selectVersions(pkg.dependencies || {}, deps)
-    selectVersions(pkg.devDependencies || {}, devDeps)
-    selectVersions(pkg.optionalDeps || {}, optionalDeps)
-    selectVersions(pkg.peerDeps || {}, peerDeps)
+    selectVersions(pkg.dependencies || {}, deps, siblingVersions)
+    selectVersions(pkg.devDependencies || {}, devDeps, siblingVersions)
+    selectVersions(pkg.optionalDeps || {}, optionalDeps, siblingVersions)
+    selectVersions(pkg.peerDeps || {}, peerDeps, siblingVersions)
 
     await ensureFileHasContents(projectDir, 'package.json', JSON.stringify(pkg, null, 2))
   }
@@ -175,10 +178,16 @@ function chooseVersions (deps, list) {
   })
 }
 
-function selectVersions (deps, list) {
+function selectVersions (deps, list, siblingVersions) {
   Object.entries(list).forEach(([key, value]) => {
     if (deps[key] != null) {
-      deps[key] = value
+      if (siblingVersions[key] != null) {
+        // take sibling version if available
+        deps[key] = siblingVersions[key]
+      } else {
+        // otherwise take global dep version if available
+        deps[key] = value
+      }
     }
   })
 }
