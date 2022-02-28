@@ -135,7 +135,8 @@ async function alignMonorepoProjectDependencies (projectDirs) {
       encoding: 'utf-8'
     }))
 
-    siblingVersions[pkg.name] = `^${pkg.version}`
+    // turn 1.4.1 -> 1.4.0, otherwise every patch release causes all the sibling deps to change
+    siblingVersions[pkg.name] = `^${pkg.version.split('.').slice(0, 2).join('.')}.0`
 
     chooseVersions(pkg.dependencies || {}, deps)
     chooseVersions(pkg.devDependencies || {}, devDeps)
