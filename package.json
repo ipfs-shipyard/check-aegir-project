@@ -114,7 +114,7 @@
     "release": "semantic-release"
   },
   "dependencies": {
-    "chalk": "^4.1.2",
+    "chalk": "^5.0.1",
     "diff": "^5.0.0",
     "execa": "^5.0.0",
     "it-glob": "^1.0.2",
