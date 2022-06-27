@@ -123,6 +123,6 @@
     "semver": "^7.3.5"
   },
   "devDependencies": {
-    "aegir": "^36.1.3"
+    "aegir": "^37.4.1"
   }
 }
