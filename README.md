@@ -1,3 +1,5 @@
+# ⛔️ ARCHIVED: this has been added to aegir itself
+
 # check-aegir-project
 
 A CLI tool to ensure conformity between the different types of [aegir](https://www.npmjs.com/package/aegir) js projects.
