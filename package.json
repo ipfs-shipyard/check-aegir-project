@@ -116,7 +116,7 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "diff": "^5.0.0",
-    "execa": "^5.0.0",
+    "execa": "^6.1.0",
     "it-glob": "^1.0.2",
     "merge-options": "^3.0.4",
     "prompt": "^1.2.1",
